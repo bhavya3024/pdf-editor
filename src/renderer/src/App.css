@@ -1,0 +1,175 @@
+body {
+  font-family: sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f0f0f0;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  max-width: 1200px; /* Limit overall width */
+  margin: 0 auto; /* Center container */
+}
+
+h1 {
+  color: #333;
+}
+
+.controls-container {
+  display: flex;
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
+  justify-content: center;
+  gap: 15px; /* Spacing between control groups */
+  margin-bottom: 15px;
+  padding: 10px;
+  background-color: #e9e9e9;
+  border-radius: 5px;
+  width: 100%;
+  box-sizing: border-box; /* Include padding in width */
+}
+
+.control-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.file-input-label {
+  padding: 8px 12px;
+  background-color: #007bff;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.file-input-label:hover {
+  background-color: #0056b3;
+}
+
+/* Hide default file input */
+input[type="file"] {
+  display: none;
+}
+
+.file-name {
+  font-style: italic;
+  color: #555;
+  margin-left: 10px; /* Space after button if shown */
+}
+
+button {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+button:hover {
+  background-color: #eee;
+  border-color: #aaa;
+}
+
+button:disabled {
+  background-color: #f8f8f8;
+  border-color: #ddd;
+  color: #aaa;
+  cursor: not-allowed;
+}
+
+/* Highlight active edit mode button */
+button.active-mode {
+  background-color: #cce5ff;
+  border-color: #007bff;
+  font-weight: bold;
+}
+
+.pdf-viewer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+  width: 100%; /* Take available width */
+}
+
+.page-navigation {
+  margin-bottom: 10px;
+}
+
+#pdf-canvas {
+  border: 1px solid #ccc; /* Subtle border */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
+  max-width: 100%; /* Ensure canvas is responsive */
+  height: auto; /* Maintain aspect ratio */
+}
+
+.loading-indicator,
+.error-message {
+  margin-top: 20px;
+  font-size: 1.1em;
+  color: #555;
+}
+
+.error-message {
+  color: red;
+  font-weight: bold;
+}
+
+/* Text Input Overlay Styles */
+.text-input-overlay {
+  position: fixed; /* Position relative to the viewport */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* Center the overlay */
+  background-color: white;
+  padding: 25px;
+  border: 1px solid #ccc;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  z-index: 1000; /* Ensure it's on top */
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 300px; /* Minimum width */
+}
+
+.text-input-overlay h3 {
+  margin-top: 0;
+  text-align: center;
+}
+
+.text-input-overlay textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box; /* Include padding in width */
+  resize: vertical; /* Allow vertical resize */
+}
+
+.overlay-buttons {
+  display: flex;
+  justify-content: space-around; /* Space out buttons */
+  margin-top: 10px;
+}
+
+/* Inline Text Editor Styles */
+.inline-text-editor {
+  position: absolute; /* Required for positioning */
+  border: 1px dashed blue;
+  padding: 2px;
+  font-size: 16px; /* Match annotation font size */
+  font-family: Arial; /* Match annotation font family */
+  line-height: 1.2;
+  background: rgba(255, 255, 255, 0.9);
+  z-index: 10; /* Above canvas */
+  min-width: 50px;
+  min-height: 20px;
+  resize: none; /* Prevent user resizing for now */
+  /* Add more styles as needed */
+} 
