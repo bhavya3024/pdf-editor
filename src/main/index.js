@@ -1,8 +1,9 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, dialog } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 // import fs from 'fs' // Remove unused fs import
+import fs from 'fs'
 
 let mainWindow
 
@@ -64,6 +65,36 @@ function createWindow() {
     }
     */
   })
+
+  // IPC handler for saving the modified PDF
+  ipcMain.on('save-pdf-dialog', async (event, pdfBytes) => {
+    if (!mainWindow) return;
+    console.log('Received save-pdf-dialog request.');
+
+    const { canceled, filePath } = await dialog.showSaveDialog(mainWindow, {
+      title: 'Save Modified PDF',
+      defaultPath: `modified_document.pdf`, 
+      filters: [
+        { name: 'PDF Documents', extensions: ['pdf'] }
+      ]
+    });
+
+    if (!canceled && filePath) {
+      console.log(`Attempting to save PDF to: ${filePath}`);
+      try {
+        fs.writeFileSync(filePath, pdfBytes); // Write the buffer directly
+        console.log(`Successfully saved PDF to ${filePath}`);
+        // Optionally, send a success message back to the renderer
+        // event.sender.send('save-pdf-success', filePath);
+      } catch (error) {
+        console.error('Failed to save PDF file:', error);
+        // Optionally, send an error message back to the renderer
+        // event.sender.send('save-pdf-error', error.message);
+      }
+    } else {
+      console.log('PDF save dialog cancelled.');
+    }
+  });
 }
 
 // This method will be called when Electron has finished
