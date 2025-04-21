@@ -149,26 +149,48 @@ function App() {
         if (annotation.page > 0 && annotation.page <= pages.length) {
           const pageIndex = annotation.page - 1;
           const page = pages[pageIndex];
-          const { height: pdfPageHeight } = page.getSize();
+          // const { height: pdfPageHeight } = page.getSize(); // Get full size later
 
-          // --- Coordinate Conversion ---
-          const scaleFactor = 1.5;
-          const pointX_TL = annotation.x / devicePixelRatio / scaleFactor;
-          const pointY_TL = annotation.y / devicePixelRatio / scaleFactor;
-          const pdfX = pointX_TL;
-          const pdfY = pdfPageHeight - pointY_TL;
+          // --- Coordinate Conversion (REVISED) ---
+          // 1. Get CSS pixel coordinates (relative to canvas top-left)
+          const cssX = annotation.x / devicePixelRatio;
+          const cssY = annotation.y / devicePixelRatio;
+
+          // 2. Get the dimensions used for display (from pdfjs viewport at scale 1.5)
+          const pageDim = pageDimensions.find(p => p.pageNum === annotation.page);
+          if (!pageDim) {
+              console.warn(`handleSavePdf: Skipping annotation, cannot find page dimensions for page ${annotation.page}`);
+              return; // Use continue equivalent in forEach (return)
+          }
+          const { width: displayWidth, height: displayHeight } = pageDim; // CSS dimensions
+
+          // 3. Get the actual PDF page dimensions in points
+          const { width: pdfPageWidth, height: pdfPageHeightActual } = page.getSize();
+
+          // 4. Calculate mapping ratio from display CSS pixels to PDF points
+          const ratioX = pdfPageWidth / displayWidth;
+          const ratioY = pdfPageHeightActual / displayHeight;
+
+          // 5. Map CSS coordinates to PDF points (relative to top-left first)
+          const pdfPointX_TL = cssX * ratioX;
+          const pdfPointY_TL = cssY * ratioY;
+
+          // 6. Convert top-left PDF points to bottom-left PDF points for pdf-lib
+          const pdfX = pdfPointX_TL;
+          const pdfY = pdfPageHeightActual - pdfPointY_TL;
           // --- End Coordinate Conversion ---
 
           if (index === 0) {
-            console.log(`handleSavePdf: Annotation ${index+1} (${annotation.type}) - Original (x,y): (${annotation.x.toFixed(2)}, ${annotation.y.toFixed(2)}), PDF Coords (x,y): (${pdfX.toFixed(2)}, ${pdfY.toFixed(2)}), Page Height: ${pdfPageHeight}`);
+             // Update log to show new coords
+            console.log(`handleSavePdf: Annotation ${index+1} (${annotation.type}) - Canvas Coords (x,y): (${annotation.x.toFixed(2)}, ${annotation.y.toFixed(2)}), PDF Coords (x,y): (${pdfX.toFixed(2)}, ${pdfY.toFixed(2)}), Page Height: ${pdfPageHeightActual}`);
           }
 
           if (annotation.type === 'text') {
             page.drawText(annotation.text, {
               x: pdfX,
-              y: pdfY - selectedFontSize, // Adjust Y for baseline
+              y: pdfY - selectedFontSize / 1.5, // Adjust Y using scaled font size
               font: embeddedFont,
-              size: selectedFontSize,
+              size: selectedFontSize / 1.5, // Scale font size back to PDF points
               color: rgb(0, 0, 0),
             });
           } else if (annotation.type === 'cross') {

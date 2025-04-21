@@ -3,7 +3,7 @@ import { useState, useEffect, useRef, useLayoutEffect } from 'react'
 import PropTypes from 'prop-types'
 
 // Constants might be moved to a shared file later
-const FONT_FAMILY = 'Arial'
+const FONT_FAMILY = 'Helvetica'
 const FONT_WEIGHT = 'normal'
 
 // Receive props from App
